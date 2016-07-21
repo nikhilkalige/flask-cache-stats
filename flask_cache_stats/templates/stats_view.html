@@ -28,18 +28,21 @@
           <td>{{ item[1]['miss'] }}</td>
           <td>{{ item[1]['size'] }}</td>
           <td>{{ item[1]['access_time'] }}</td>
-          <td>
-            {% if item[1]['hot'] %}
-              <button class="btn btn-primary" data-key="{{ item[0] }}" type="submit">Clear</button>
-            {% else %}
-                <span></span>
-            {% endif %}
-          </td>
-        </tr>
+          {% if api_enabled %}
+            <td>
+              {% if item[1]['hot'] %}
+                <button class="btn btn-primary" data-key="{{ item[0] }}" type="submit">Clear</button>
+              {% else %}
+                  <span></span>
+              {% endif %}
+            </td>
+          {% endif %}
+          </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% if api_enabled %}
 <script type="text/javascript">
   {
     let table = document.getElementById('flask_cache_stats');
@@ -60,6 +63,7 @@
       })
     }
   }
+{% endif %}
 </script>
 {% endblock %}
 

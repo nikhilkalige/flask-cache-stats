@@ -148,7 +148,8 @@ class CacheStats(Blueprint):
 
     def stats_view(self):
         return render_template(self.cache_template, log=self.cache.get_log(),
-                               base_template=self.base_template)
+                               base_template=self.base_template,
+                               api_enabled=self.api_enabled)
 
     def clear_key(self, key):
         if self.cache.delete(key):
