@@ -1,4 +1,5 @@
 from flask_cache import Cache as FlaskCache
+from flask_login import login_required
 from flask import Blueprint, render_template, jsonify, abort
 from sys import getsizeof
 import time
@@ -122,7 +123,8 @@ class Cache(FlaskCache):
 
 class CacheStats(Blueprint):
     def __init__(self, cache_obj, base_template="base.html",
-                 enable_clear_api=False, cache_template="stats_view.html",
+                 enable_clear_api=False, protect_api=True,
+                 cache_template="stats_view.html",
                  url_prefix='/cache_stats'):
         self.cache = cache_obj
         self.base_template = base_template
@@ -136,8 +138,13 @@ class CacheStats(Blueprint):
         self.add_url_rule(url_prefix, 'flask_cache_stats', self.stats_view)
         if self.api_enabled:
             url = url_prefix + '/<key>'
+            if protect_api:
+                api = login_required(self.clear_key)
+            else:
+                api = self.clear_key
+
             self.add_url_rule(url, 'flask_cache_clear_key',
-                              self.clear_key, methods=['DELETE'])
+                              api, methods=['DELETE'])
 
     def stats_view(self):
         return render_template(self.cache_template, log=self.cache.get_log(),
