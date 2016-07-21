@@ -1,0 +1,2 @@
+recursive-include flask_cache_stats/templates *.html
+recursive-include flask_cache_stats/static *
