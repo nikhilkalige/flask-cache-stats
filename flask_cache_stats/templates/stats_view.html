@@ -53,7 +53,8 @@
         request.open('DELETE', document.URL + '/' + key);
         request.addEventListener('load', function() {
           // Refresh page
-          window.location.reload(true);
+          if((this.status == 200) || (this.status == 404))
+            window.location.reload(true);
         });
         request.send();
       })
