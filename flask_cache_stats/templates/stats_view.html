@@ -1,0 +1,64 @@
+{% extends base_template %}
+{% block content %}
+<div id="flask_cache_stats">
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>Key</th>
+        <th>Hot</th>
+        <th>Hit</th>
+        <th>Miss</th>
+        <th>Size (kb)</th>
+        <th>Access Time (ms)</th>
+        <th>Clear Button</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in log|dictsort %}
+        <tr>
+          <td>{{ item[0] }}</td>
+          <td>
+            {% if item[1]['hot'] %}
+                <span class="label label-success">Hot</span>
+            {% else %}
+                <span class="label label-danger">Cold</span>
+            {% endif %}
+          </td>
+          <td>{{ item[1]['hit'] }}</td>
+          <td>{{ item[1]['miss'] }}</td>
+          <td>{{ item[1]['size'] }}</td>
+          <td>{{ item[1]['access_time'] }}</td>
+          <td>
+            {% if item[1]['hot'] %}
+              <button class="btn btn-primary" data-key="{{ item[0] }}" type="submit">Clear</button>
+            {% else %}
+                <span></span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script type="text/javascript">
+  {
+    let table = document.getElementById('flask_cache_stats');
+    let buttons = table.getElementsByTagName('button');
+
+    for(let button of buttons) {
+      button.addEventListener('click', function(evt) {
+        let key = evt.target.dataset.key;
+        let request = new XMLHttpRequest();
+
+        request.open('DELETE', document.URL + '/' + key);
+        request.addEventListener('load', function() {
+          // Refresh page
+          window.location.reload(true);
+        });
+        request.send();
+      })
+    }
+  }
+</script>
+{% endblock %}
+
