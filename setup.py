@@ -22,7 +22,7 @@ setup(
     install_requires=[
         'Flask>=0.9',
         'Flask-Cache>=0.13.1',
-        'Flask-Login>=0.3.2'
+        'Flask-Login>=0.2.11'
     ],
     test_suite="tests",
     classifiers=[
