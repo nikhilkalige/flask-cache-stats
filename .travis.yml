@@ -6,4 +6,7 @@ python:
     - "3.5"
 install:
     - pip install -e .
-script: py.test
+    - pip install codecov pytest-cov
+script: py.test --cov=./
+after_success:
+    - codecov
