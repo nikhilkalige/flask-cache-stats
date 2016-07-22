@@ -1,3 +1,5 @@
+# Tests grabbed from Flask-Cache(https://github.com/thadeusb/flask-cache)
+# Ensures that we donot break flask_cache when extending the cache class
 from __future__ import with_statement
 
 import sys
@@ -7,7 +9,7 @@ import random
 import string
 
 from flask import Flask, render_template, render_template_string
-from flask_cache_stats.stats import Cache
+from flask_cache_stats import Cache
 from flask.ext.cache import function_namespace, make_template_fragment_key
 
 if sys.version_info < (2, 7):

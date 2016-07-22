@@ -1,7 +1,7 @@
 import pytest
 import os
 from flask import Flask
-from flask_cache_stats.stats import Cache, CacheStats
+from flask_cache_stats import Cache, CacheStats
 from flask_login import LoginManager, UserMixin, login_user
 
 
