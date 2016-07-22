@@ -1,5 +1,6 @@
 # Flask-Cache-Stats
 [![Build Status](https://img.shields.io/travis/nikhilkalige/flask-cache-stats/master.svg?style=flat-square)](https://travis-ci.org/nikhilkalige/flask-cache-stats)
+[![Coverage Status](https://img.shields.io/codecov/c/github/nikhilkalige/flask-cache-stats/master.svg?style=flat-square)](https://codecov.io/gh/nikhilkalige/flask-cache-stats)
 
 Flask-Cache-Stats is an extension for flask to display cache statistics and clear keys from the cache using [Flask-Cache](https://github.com/thadeusb/flask-cache) extension.
 
