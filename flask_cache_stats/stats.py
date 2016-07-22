@@ -57,9 +57,9 @@ class Cache(FlaskCache):
         end_time = (time.time() - start_time) * 1000
         if retval:
             size = getsizeof(retval, 0) / 1024.0
-            self.__add_log(args[0], hit=True, size=size, access_time=end_time)
+            self.__add_log(args[0], hot=True, hit=True, size=size, access_time=end_time)
         else:
-            self.__add_log(args[0], miss=True, access_time=end_time)
+            self.__add_log(args[0], cold=True, miss=True, access_time=end_time)
         return retval
 
     def set(self, *args, **kwargs):
@@ -92,9 +92,9 @@ class Cache(FlaskCache):
         for idx, key in enumerate(args):
             if retval[idx]:
                 size = getsizeof(retval, 0) / 1024.0
-                self.__add_log(key, hit=True, size=size)
+                self.__add_log(key, hot=True, hit=True, size=size)
             else:
-                self.__add_log(key, miss=True)
+                self.__add_log(key, cold=True, miss=True)
         return retval
 
     def delete_many(self, *args, **kwargs):
