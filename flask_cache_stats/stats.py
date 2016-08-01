@@ -1,8 +1,13 @@
 from flask_cache import Cache as FlaskCache
 from flask_login import login_required
 from flask import Blueprint, render_template, jsonify, abort
+from flask import request, current_app
 from sys import getsizeof
 import time
+import functools
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class LogData(object):
@@ -65,6 +70,7 @@ class Cache(FlaskCache):
     def set(self, *args, **kwargs):
         "Proxy function for internal cache object."
         retval = self.cache.set(*args, **kwargs)
+        print(retval)
         if retval:
             size = getsizeof(args[1], 0) / 1024.0
             self.__add_log(args[0], hot=True, size=size)
@@ -119,6 +125,56 @@ class Cache(FlaskCache):
             data[key] = self._log[key].data()
 
         return data
+
+    def cached(self, timeout=None, key_prefix='view/%s', unless=None):
+        """This is a copy of the flask cache version of cached. This one to one
+           copy is not ideal, but a necessasity as the the decorator calls
+           self.cache.get() rather than self.get().
+        """
+        def decorator(f):
+            @functools.wraps(f)
+            def decorated_function(*args, **kwargs):
+                #: Bypass the cache entirely.
+                if callable(unless) and unless() is True:
+                    return f(*args, **kwargs)
+
+                try:
+                    cache_key = decorated_function.make_cache_key(*args, **kwargs)
+                    rv = self.get(cache_key)
+                except Exception:
+                    if current_app.debug:
+                        raise
+                    logger.exception("Exception possibly due to cache backend.")
+                    return f(*args, **kwargs)
+
+                if rv is None:
+                    rv = f(*args, **kwargs)
+                    try:
+                        self.set(cache_key, rv,
+                                   timeout=decorated_function.cache_timeout)
+                    except Exception:
+                        if current_app.debug:
+                            raise
+                        logger.exception("Exception possibly due to cache backend.")
+                        return f(*args, **kwargs)
+                return rv
+
+            def make_cache_key(*args, **kwargs):
+                if callable(key_prefix):
+                    cache_key = key_prefix()
+                elif '%s' in key_prefix:
+                    cache_key = key_prefix % request.path
+                else:
+                    cache_key = key_prefix
+
+                return cache_key
+
+            decorated_function.uncached = f
+            decorated_function.cache_timeout = timeout
+            decorated_function.make_cache_key = make_cache_key
+
+            return decorated_function
+        return decorator
 
 
 class CacheStats(Blueprint):
